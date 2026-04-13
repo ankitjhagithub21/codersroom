@@ -3,7 +3,7 @@ import { config } from "../config/env.js";
 let io;
 
 const initSocket = (httpServer) => {
-  io = new Server(httpServer, { cors: { origin: config.origin, credentials: true  } });
+  io = new Server(httpServer, { cors: { origin: config.origin, methods: ['GET', 'POST'] } });
   io.on("connection", (socket) => {
     console.log("Client connected", socket.id);
    
