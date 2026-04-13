@@ -10,7 +10,7 @@ const CodeEditorWindow = ({ onChange, language, code, theme }) => {
         language={language || "javascript"}
         value={code}
         theme={theme}
-        defaultValue="// Start coding here..."
+        defaultValue={language === "python" ? "# Start coding here..." : "// Start coding here..."}
         onChange={onChange}
         options={{
           minimap: { enabled: false },
