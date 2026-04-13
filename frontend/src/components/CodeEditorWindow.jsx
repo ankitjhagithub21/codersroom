@@ -2,18 +2,26 @@ import Editor from "@monaco-editor/react";
 
 const CodeEditorWindow = ({ onChange, language, code, theme }) => {
   return (
-    <div className="overlay rounded-md overflow-hidden w-full h-full shadow-4xl">
+    <div className="w-full h-full">
       <Editor
-        // Only key on language — remounting on theme change is unnecessary
-        // and causes an annoying flicker. The Editor handles theme reactively.
         key={language}
-        height="85vh"
-        width="80%"
+        height="100%"
+        width="100%"
         language={language || "javascript"}
         value={code}
         theme={theme}
-        defaultValue="// some comment"
+        defaultValue="// Start coding here..."
         onChange={onChange}
+        options={{
+          minimap: { enabled: false },
+          fontSize: 14,
+          fontFamily: "'Fira Code', 'Consolas', monospace",
+          lineNumbers: "on",
+          roundedSelection: false,
+          scrollBeyondLastLine: false,
+          automaticLayout: true,
+          padding: { top: 16, bottom: 16 },
+        }}
       />
     </div>
   );

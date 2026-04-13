@@ -1,32 +1,32 @@
 import axios from "axios";
-import {config} from "../config/env.js";
-import {createJudge0Config} from "../config/judge0.js";
-
+import { config } from "../config/env.js";
+import { createJudge0Config } from "../config/judge0.js";
 
 export const compileCode = async (language_id, source_code, stdin = "") => {
   try {
     const submissionData = {
       language_id,
-      source_code,
-      stdin
+      // ✅ Encode to base64 before sending to Judge0
+      source_code: btoa(unescape(encodeURIComponent(source_code))),
+      stdin: btoa(unescape(encodeURIComponent(stdin))),
     };
 
     const judge0Config = createJudge0Config(submissionData);
     const response = await axios(judge0Config);
-    
+
     const token = response.data.token;
 
     const resultConfig = {
       method: "GET",
       url: `${config.rapidApiUrl}/${token}`,
-      params: { 
-        base64_encoded: "true", 
-        fields: "*" 
+      params: {
+        base64_encoded: "true",
+        fields: "*",
       },
       headers: {
         "X-RapidAPI-Host": config.rapidApiHost,
         "X-RapidAPI-Key": config.rapidApiKey,
-      }
+      },
     };
 
     let result;
@@ -34,7 +34,7 @@ export const compileCode = async (language_id, source_code, stdin = "") => {
     const maxAttempts = 10;
 
     do {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const resultResponse = await axios(resultConfig);
       result = resultResponse.data;
       attempts++;
@@ -44,29 +44,28 @@ export const compileCode = async (language_id, source_code, stdin = "") => {
       throw new Error("Execution timed out");
     }
 
-    const decodedOutput = result.stdout ? atob(result.stdout) : "";
-    const decodedError = result.stderr ? atob(result.stderr) : "";
-    const decodedCompileInfo = result.compile_output ? atob(result.compile_output) : "";
+    // ✅ Safe base64 decode with UTF-8 support
+    const decode = (str) =>
+      str ? decodeURIComponent(escape(atob(str))) : "";
 
     return {
       success: true,
       data: {
         status: result.status.description,
         status_id: result.status.id,
-        output: decodedOutput,
-        error: decodedError,
-        compile_info: decodedCompileInfo,
+        output: decode(result.stdout),
+        error: decode(result.stderr),
+        compile_info: decode(result.compile_output),
         time: result.time,
-        memory: result.memory
-      }
+        memory: result.memory,
+      },
     };
-
   } catch (error) {
     console.error("Judge0 API Error:", error);
     return {
       success: false,
       message: "Failed to execute code",
-      error: error.response?.data || error.message
+      error: error.response?.data || error.message,
     };
   }
 };

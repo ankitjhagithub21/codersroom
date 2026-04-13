@@ -27,6 +27,14 @@ const initSocket = (httpServer) => {
       socket.broadcast.emit("theme-update", data);
     });
 
+    socket.on("compile-start", (data) => {
+      socket.broadcast.emit("compile-start", data);
+    });
+
+    socket.on("compile-result", (data) => {
+      socket.broadcast.emit("compile-result", data);
+    });
+
     socket.on("ping", () => {
       console.log("ping received");
       socket.emit("pong");

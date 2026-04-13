@@ -1,18 +1,16 @@
-import {config} from "./env.js";
+import { config } from "./env.js";
 
-export const createJudge0Config = (formData) => ({
+export const createJudge0Config = (submissionData) => ({
   method: "POST",
   url: config.rapidApiUrl,
-  params: { 
-    base64_encoded: "true", 
-    fields: "*" 
+  params: {
+    base64_encoded: "true", // ✅ tells Judge0 the payload IS base64
+    fields: "*",
   },
   headers: {
-    "content-type": "application/json",
     "Content-Type": "application/json",
     "X-RapidAPI-Host": config.rapidApiHost,
     "X-RapidAPI-Key": config.rapidApiKey,
   },
-  data: formData,
+  data: submissionData, // ✅ no btoa() here
 });
-
