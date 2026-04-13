@@ -2,20 +2,21 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 const themeOptions = [
-  { id: "vs-dark", name: "VS Dark" },
+  { id: "vs-dark",  name: "VS Dark"  },
   { id: "vs-light", name: "VS Light" },
-  { id: "hc-black", name: "HC Black" }
+  { id: "hc-black", name: "HC Black" },
 ];
 
 const ThemeDropDown = ({ handleThemeChange, theme }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState(
-    themeOptions.find(option => option.id === theme) || themeOptions[0]
-  );
+
+  // Derive selectedTheme from prop — no internal state needed.
+  // This ensures socket-driven updates are reflected in the UI.
+  const selectedTheme = themeOptions.find((o) => o.id === theme) ?? themeOptions[0];
 
   const handleSelect = (themeOption) => {
-    setSelectedTheme(themeOption);
-    handleThemeChange({ target: { value: themeOption.id } });
+    // Pass the id string directly — no fake synthetic event needed
+    handleThemeChange(themeOption.id);
     setIsOpen(false);
   };
 
@@ -28,7 +29,7 @@ const ThemeDropDown = ({ handleThemeChange, theme }) => {
         <span className="text-gray-900 font-medium">{selectedTheme.name}</span>
         <ChevronDown
           className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${
-            isOpen ? 'transform rotate-180' : ''
+            isOpen ? "transform rotate-180" : ""
           }`}
         />
       </button>
@@ -42,8 +43,8 @@ const ThemeDropDown = ({ handleThemeChange, theme }) => {
                 onClick={() => handleSelect(themeOption)}
                 className={`w-full px-4 py-2 text-left hover:bg-blue-50 focus:outline-none focus:bg-blue-50 transition-colors ${
                   selectedTheme.id === themeOption.id
-                    ? 'bg-blue-100 text-blue-900 font-medium'
-                    : 'text-gray-900'
+                    ? "bg-blue-100 text-blue-900 font-medium"
+                    : "text-gray-900"
                 }`}
               >
                 {themeOption.name}
