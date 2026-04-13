@@ -4,5 +4,7 @@ import { io } from 'socket.io-client';
 const URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:8080';
 
 export const socket = io(URL, {
-  autoConnect: true // Set to false if you want to connect manually later
+  autoConnect: true, // Set to false if you want to connect manually later
+  withCredentials: true,
+  methods: ['GET', 'POST']
 });
