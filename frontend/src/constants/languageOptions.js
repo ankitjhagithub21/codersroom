@@ -1,0 +1,22 @@
+export const languageOptions = [
+  { id: 71, name: "Python", value: "python" },
+  { id: 63, name: "JavaScript", value: "javascript" },
+  { id: 62, name: "Java", value: "java" },
+  { id: 54, name: "C++", value: "cpp" },
+  { id: 50, name: "C", value: "c" },
+  { id: 61, name: "C#", value: "csharp" },
+  { id: 75, name: "Rust", value: "rust" },
+  { id: 76, name: "Ruby", value: "ruby" },
+  { id: 78, name: "Kotlin", value: "kotlin" },
+  { id: 79, name: "Go", value: "go" },
+  { id: 80, name: "Haskell", value: "haskell" },
+  { id: 81, name: "Swift", value: "swift" },
+  { id: 82, name: "TypeScript", value: "typescript" },
+  { id: 83, name: "PHP", value: "php" },
+  { id: 84, name: "Scala", value: "scala" },
+  { id: 85, name: "Perl", value: "perl" },
+  { id: 86, name: "Bash", value: "bash" },
+  { id: 87, name: "SQL", value: "sql" },
+  { id: 88, name: "HTML", value: "html" },
+  { id: 89, name: "CSS", value: "css" }
+];
