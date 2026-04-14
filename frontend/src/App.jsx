@@ -10,6 +10,7 @@ import { socket } from "./lib/socket";
 import { useCallback, useRef } from "react";
 import { debounce } from "lodash";
 import { Code2, Users, Copy, Check, LogOut } from "lucide-react";
+import CustomInput from "./components/CustomInput";
 
 function App() {
   // Room state
@@ -23,6 +24,7 @@ function App() {
   const [selectedLanguage, setSelectedLanguage] = useState(languageOptions[0]);
   const [selectedTheme, setSelectedTheme] = useState("vs-dark");
   const [code, setCode] = useState("");
+  const [customInput, setCustomInput] = useState("");
   
   // Compilation state
   const [isCompiling, setIsCompiling] = useState(false);
@@ -98,6 +100,14 @@ function App() {
     }, 500);
   };
 
+  // Custom input change handler
+  const handleCustomInputChange = (value) => {
+    setCustomInput(value);
+    if (roomId) {
+      socket.emit("custom-input-update", { roomId, customInput: value });
+    }
+  };
+
   // Language change handler
   const handleLanguageChange = (value) => {
     setSelectedLanguage(value);
@@ -137,7 +147,7 @@ function App() {
         body: JSON.stringify({
           language_id: selectedLanguage.id,
           source_code: code,
-          stdin: ""
+          stdin: customInput
         })
       });
 
@@ -213,6 +223,10 @@ function App() {
     };
     
     const handleThemeUpdate = (data) => setSelectedTheme(data.theme);
+
+    const handleCustomInputUpdate = (data) => {
+      setCustomInput(data.customInput);
+    };
     
     const handleCompileStart = (data) => {
       setIsCompiling(true);
@@ -245,6 +259,7 @@ function App() {
     socket.on("code-update", handleCodeUpdate);
     socket.on("language-update", handleLanguageUpdate);
     socket.on("theme-update", handleThemeUpdate);
+    socket.on("custom-input-update", handleCustomInputUpdate);
     socket.on("compile-start", handleCompileStart);
     socket.on("compile-result", handleCompileResult);
 
@@ -261,6 +276,7 @@ function App() {
       socket.off("code-update", handleCodeUpdate);
       socket.off("language-update", handleLanguageUpdate);
       socket.off("theme-update", handleThemeUpdate);
+      socket.off("custom-input-update", handleCustomInputUpdate);
       socket.off("compile-start", handleCompileStart);
       socket.off("compile-result", handleCompileResult);
       socket.disconnect();
@@ -269,7 +285,10 @@ function App() {
 
   // Show room entry if not in a room
   if (!isInRoom) {
-    return <RoomEntry onJoinRoom={handleJoinRoom} initialRoomId={roomId} />;
+    // Get room ID from URL on initial load
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlRoomId = urlParams.get('room') || '';
+    return <RoomEntry onJoinRoom={handleJoinRoom} initialRoomId={urlRoomId} />;
   }
 
   // Main editor view
@@ -365,22 +384,37 @@ function App() {
         </div>
       </header>
 
-      {/* Main Content Area */}
+       {/* Main Content Area */}
       <main className="flex flex-1 overflow-hidden p-4 gap-4">
-        {/* Editor Section */}
-        <div className="flex-1 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
-            <span className="text-sm font-medium text-gray-700">Code Editor</span>
+        {/* Left Column - Editor and Input */}
+        <div className="flex-1 flex flex-col gap-4 min-w-0">
+          {/* Code Editor */}
+          <div className="flex-1 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 min-h-0">
+            <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+              <span className="text-sm font-medium text-gray-700">Code Editor</span>
+            </div>
+            <div className="h-[calc(100%-40px)]">
+              <CodeEditorWindow
+                language={selectedLanguage.value}
+                theme={selectedTheme}
+                code={code}
+                onChange={handleCodeChange}
+              />
+            </div>
           </div>
-          <CodeEditorWindow
-            language={selectedLanguage.value}
-            theme={selectedTheme}
-            code={code}
-            onChange={handleCodeChange}
-          />
+          
+          {/* Custom Input */}
+          <div className="flex-shrink-0">
+            <CustomInput
+              value={customInput}
+              onChange={handleCustomInputChange}
+              disabled={isCompiling}
+              placeholder="Enter input for your program (stdin)..."
+            />
+          </div>
         </div>
         
-        {/* Output Section */}
+        {/* Right Column - Output */}
         <div className="w-[450px] bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 flex flex-col">
           <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
             <span className="text-sm font-medium text-gray-700">Output Console</span>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Code2, Users, ArrowRight, Copy, Key, Sparkles } from "lucide-react";
 
 const RoomEntry = ({ onJoinRoom, initialRoomId = "" }) => {
@@ -6,6 +6,13 @@ const RoomEntry = ({ onJoinRoom, initialRoomId = "" }) => {
   const [roomId, setRoomId] = useState(initialRoomId);
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+
+  // Auto-switch to join mode if room ID is present in URL
+  useEffect(() => {
+    if (initialRoomId) {
+      setMode("join");
+    }
+  }, [initialRoomId]);
 
   const generateRoomId = () => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -139,9 +146,15 @@ const RoomEntry = ({ onJoinRoom, initialRoomId = "" }) => {
                     value={roomId}
                     onChange={(e) => setRoomId(e.target.value.toUpperCase())}
                     placeholder="Enter room ID"
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all uppercase"
+                    className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all uppercase ${
+                      initialRoomId 
+                        ? "bg-gray-100 border-gray-300 cursor-not-allowed" 
+                        : "border-gray-300"
+                    }`}
                     maxLength={20}
+                    disabled={!!initialRoomId}
                   />
+                 
                 </div>
               )}
             </div>

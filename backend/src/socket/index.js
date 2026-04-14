@@ -74,6 +74,10 @@ const initSocket = (httpServer) => {
       socket.broadcast.emit("theme-update", data);
     });
 
+    socket.on("custom-input-update", (data) => {
+      socket.broadcast.emit("custom-input-update", data);
+    });
+
     socket.on("compile-start", (data) => {
       socket.broadcast.emit("compile-start", data);
     });
