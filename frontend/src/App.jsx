@@ -6,6 +6,7 @@ import CompileRunButton from "./components/CompileRunButton";
 import RoomEntry from "./components/RoomEntry";
 import { useState, useEffect } from "react";
 import { languageOptions } from "./constants/languageOptions";
+import { getStarterCode } from "./constants/starterCode";
 import { socket } from "./lib/socket";
 import { useCallback, useRef } from "react";
 import { debounce } from "lodash";
@@ -111,8 +112,15 @@ function App() {
   // Language change handler
   const handleLanguageChange = (value) => {
     setSelectedLanguage(value);
+    
+    // Load starter code for the new language
+    const starterCode = getStarterCode(value.value);
+    setCode(starterCode);
+    
+    // Emit language and code changes to socket
     if (roomId) {
       socket.emit("language-update", { roomId, language: value });
+      socket.emit("code-update", { roomId, code: starterCode });
     }
   };
 

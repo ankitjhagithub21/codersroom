@@ -1,4 +1,5 @@
 import Editor from "@monaco-editor/react";
+import { getStarterCode } from "../constants/starterCode";
 
 const CodeEditorWindow = ({ onChange, language, code, theme }) => {
   return (
@@ -10,7 +11,7 @@ const CodeEditorWindow = ({ onChange, language, code, theme }) => {
         language={language || "javascript"}
         value={code}
         theme={theme}
-        defaultValue={language === "python" ? "# Start coding here..." : "// Start coding here..."}
+        defaultValue={getStarterCode(language)}
         onChange={onChange}
         options={{
           minimap: { enabled: false },
