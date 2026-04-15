@@ -10,7 +10,7 @@ import { getStarterCode } from "./constants/starterCode";
 import { socket } from "./lib/socket";
 import { useCallback, useRef } from "react";
 import { debounce } from "lodash";
-import { Code2, Users, Copy, Check, LogOut } from "lucide-react";
+import { Code2, Users, Copy, Check, LogOut, PanelRightClose, PanelLeftClose } from "lucide-react";
 import CustomInput from "./components/CustomInput";
 
 function App() {
@@ -36,6 +36,7 @@ function App() {
   const [statusId, setStatusId] = useState(0);
   const [executionTime, setExecutionTime] = useState("");
   const [memoryUsage, setMemoryUsage] = useState(0);
+  const [showOutput, setShowOutput] = useState(true);
   
   const isTyping = useRef(false);
   const typingTimeout = useRef(null);
@@ -398,8 +399,13 @@ function App() {
         <div className="flex-1 flex flex-col gap-4 min-w-0">
           {/* Code Editor */}
           <div className="flex-1 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 min-h-0">
-            <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
               <span className="text-sm font-medium text-gray-700">Code Editor</span>
+               {
+                 !showOutput && (
+                  <PanelLeftClose size={20} className="text-gray-700 cursor-pointer" onClick={() => setShowOutput(true)}/>
+                 )
+               }
             </div>
             <div className="h-[calc(100%-40px)]">
               <CodeEditorWindow
@@ -423,9 +429,14 @@ function App() {
         </div>
         
         {/* Right Column - Output */}
-        <div className="w-[450px] bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 flex flex-col">
-          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+        <div className={`w-[450px] bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 flex flex-col ${showOutput ? '' : 'hidden'}`}>
+          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">Output Console</span>
+             {
+               showOutput && (
+                 <PanelRightClose size={20} className="text-gray-700 cursor-pointer" onClick={() => setShowOutput(false)}/>
+               )
+             }
           </div>
           <div className="flex-1 overflow-hidden">
             <OutputWindow
